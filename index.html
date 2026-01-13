@@ -140,6 +140,7 @@
         const svgString = serializer.serializeToString(svg);
         const svgBase64 = 'data:image/svg+xml;base64,' + base64EncodeUnicode(svgString);
         img.src = svgBase64;
+        img.alt = svgBase64;
       } catch (e) {
         alert('renderSVGToImage error: ' + e);
       }
