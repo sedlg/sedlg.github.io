@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Minimalistischer Kalender 2026</title>
+  <meta name="viewport" content="width=1284, initial-scale=1">
+  <style>
+    body {
+      background: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .calendar-container {
+      box-shadow: 0 4px 32px rgba(0,0,0,0.2);
+      background: #181818;
+      border-radius: 24px;
+      padding: 32px;
+    }
+  </style>
+</head>
+<body>
+  <div class="calendar-container">
+    <!-- SVG calendar will be inserted here by script -->
+    <svg id="calendar-svg" width="1284" height="2778" viewBox="0 0 1284 2778" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <script>
+    // Calendar parameters
+    // --- Configurable variables ---
+    const months = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+    const year = 2026;
+    const today = new Date(); // Real time current date
+    const svg = document.getElementById('calendar-svg');
+    const width = 1284, height = 2778;
+    // Colors
+    const colorPast = '#bbb';
+    const colorToday = 'orange';
+    const colorFuture = '#666';
+    // Font
+    const fontFamily = 'calibri, sans-serif';
+    const labelFont = '36px ' + fontFamily;
+    // --- Layout variables ---
+    const marginH = 4; // horizontal margin (very small)
+    const gridTop = height * (2/3);
+    const gridBottom = height * (1/5);
+    const gridHeight = gridBottom - gridTop;
+    const cols = 3, rows = 4;
+    const monthW = (width - 2 * marginH) / cols;
+    const monthH = gridHeight / rows;
+    const dotR = 10;
+    const dotGap = dotR * 1.5;
+    svg.innerHTML = '';
+
+    function daysInMonth(m, y) {
+      return new Date(y, m + 1, 0).getDate();
+    }
+
+    // Draw months
+    for (let m = 0; m < 12; m++) {
+      const row = Math.floor(m / cols);
+      const col = m % cols;
+      // Invert the row index so January is at the top and December at the bottom
+      const invertedRow = rows - 1 - row;
+      const x0 = marginH + col * monthW;
+      const y0 = gridTop + invertedRow * monthH;
+      // Month label
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', x0 + monthW / 2);
+      label.setAttribute('y', y0 + 40);
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('fill', colorPast);
+      label.setAttribute('font-family', fontFamily);
+      label.setAttribute('font-size', '36px');
+      label.setAttribute('font-weight', 'normal');
+      label.textContent = months[m];
+      svg.appendChild(label);
+      // Days grid
+      const days = daysInMonth(m, year);
+      const gridCols = 7;
+      const startX = x0 + (monthW - (gridCols * dotR * 2 + (gridCols - 1) * dotGap)) / 2;
+      const startY = y0 + 70;
+      // Find the weekday of the 1st of the month (0=Sunday, 1=Monday, ... 6=Saturday)
+      let firstDay = new Date(year, m, 1).getDay();
+      // Adjust so Monday is column 0 (German/ISO week): 0=Monday, 6=Sunday
+      firstDay = (firstDay + 6) % 7;
+      for (let d = 1; d <= days; d++) {
+        const dayDate = new Date(year, m, d);
+        let color = colorFuture;
+        // Remove time for comparison
+        const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        if (dayDate < todayDate) color = colorPast;
+        if (dayDate.getTime() === todayDate.getTime()) color = colorToday;
+        const dayIdx = d - 1;
+        // Offset by firstDay so the first day lands in the correct column
+        const colIdx = (dayIdx + firstDay) % gridCols;
+        const rowIdx = Math.floor((dayIdx + firstDay) / gridCols);
+        const cx = startX + colIdx * (dotR * 2 + dotGap) + dotR;
+        const cy = startY + rowIdx * (dotR * 2 + dotGap) + dotR;
+        const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        dot.setAttribute('cx', cx);
+        dot.setAttribute('cy', cy);
+        dot.setAttribute('r', dotR);
+        dot.setAttribute('fill', color);
+        svg.appendChild(dot);
+      }
+    }
+  </script>
+</body>
+</html>
