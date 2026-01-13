@@ -109,19 +109,38 @@
     // Render SVG as image
     // Unicode-safe base64 encoding for SVG
     function base64EncodeUnicode(str) {
-      // First we escape the string using encodeURIComponent to get the UTF-8 encoding of the characters,
-      // then we convert the percent encodings into raw bytes, and finally btoa for base64.
-      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
-        return String.fromCharCode('0x' + p1);
-      }));
+      try {
+        // First we escape the string using encodeURIComponent to get the UTF-8 encoding of the characters,
+        // then we convert the percent encodings into raw bytes, and finally btoa for base64.
+        const encoded = encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+          return String.fromCharCode('0x' + p1);
+        });
+        const b64 = btoa(encoded);
+        console.log('base64EncodeUnicode success');
+        return b64;
+      } catch (e) {
+        console.error('base64EncodeUnicode error:', e);
+        return '';
+      }
     }
 
     function renderSVGAsImage() {
-      const img = document.getElementById('calendar-img');
-      const serializer = new XMLSerializer();
-      const svgString = serializer.serializeToString(svg);
-      const svgBase64 = 'data:image/svg+xml;base64,' + base64EncodeUnicode(svgString);
-      img.src = svgBase64;
+      try {
+        const img = document.getElementById('calendar-img');
+        const serializer = new XMLSerializer();
+        const svgString = serializer.serializeToString(svg);
+        console.log('SVG string:', svgString.slice(0, 200) + '...');
+        const svgBase64 = 'data:image/svg+xml;base64,' + base64EncodeUnicode(svgString);
+        img.src = svgBase64;
+        img.onerror = function(e) {
+          console.error('Image failed to load', e);
+        };
+        img.onload = function() {
+          console.log('Image loaded successfully');
+        };
+      } catch (e) {
+        console.error('renderSVGAsImage error:', e);
+      }
     }
     renderSVGAsImage();
   </script>
