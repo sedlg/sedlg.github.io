@@ -116,10 +116,10 @@
           return String.fromCharCode('0x' + p1);
         });
         const b64 = btoa(encoded);
-        console.log('base64EncodeUnicode success');
+        alert('base64EncodeUnicode success');
         return b64;
       } catch (e) {
-        console.error('base64EncodeUnicode error:', e);
+        alert('base64EncodeUnicode error: ' + e);
         return '';
       }
     }
@@ -129,17 +129,17 @@
         const img = document.getElementById('calendar-img');
         const serializer = new XMLSerializer();
         const svgString = serializer.serializeToString(svg);
-        console.log('SVG string:', svgString.slice(0, 200) + '...');
+        alert('SVG string: ' + svgString.slice(0, 200) + '...');
         const svgBase64 = 'data:image/svg+xml;base64,' + base64EncodeUnicode(svgString);
         img.src = svgBase64;
         img.onerror = function(e) {
-          console.error('Image failed to load', e);
+          alert('Image failed to load: ' + e);
         };
         img.onload = function() {
-          console.log('Image loaded successfully');
+          alert('Image loaded successfully');
         };
       } catch (e) {
-        console.error('renderSVGAsImage error:', e);
+        alert('renderSVGAsImage error: ' + e);
       }
     }
     renderSVGAsImage();
