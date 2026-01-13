@@ -37,8 +37,8 @@
     const colorPast = '#bbb';
     const colorToday = 'orange';
     const colorFuture = '#666';
-    // Font
-    const fontFamily = 'calibri, sans-serif';
+    // Font (use web-safe for GitHub Pages)
+    const fontFamily = 'Arial, Helvetica, sans-serif';
     const labelFont = '36px ' + fontFamily;
     // --- Layout variables ---
     const marginH = 4; // horizontal margin (very small)
@@ -107,11 +107,20 @@
     }
 
     // Render SVG as image
+    // Unicode-safe base64 encoding for SVG
+    function base64EncodeUnicode(str) {
+      // First we escape the string using encodeURIComponent to get the UTF-8 encoding of the characters,
+      // then we convert the percent encodings into raw bytes, and finally btoa for base64.
+      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+        return String.fromCharCode('0x' + p1);
+      }));
+    }
+
     function renderSVGAsImage() {
       const img = document.getElementById('calendar-img');
       const serializer = new XMLSerializer();
       const svgString = serializer.serializeToString(svg);
-      const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
+      const svgBase64 = 'data:image/svg+xml;base64,' + base64EncodeUnicode(svgString);
       img.src = svgBase64;
     }
     renderSVGAsImage();
