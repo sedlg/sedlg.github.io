@@ -22,7 +22,7 @@
 </head>
 <body>
   <div class="calendar-container">
-    <img id="calendar-img" width="1284" height="2778" alt="Kalender 2026" style="display:block;max-width:100%;border-radius:8px;background:#222;" />
+    <img id="calendar-img" width="1284" height="2778" alt="Kalender 2026" />
     <svg id="calendar-svg" width="1284" height="2778" viewBox="0 0 1284 2778" xmlns="http://www.w3.org/2000/svg" style="display:none;"></svg>
   </div>
   <script>
@@ -55,6 +55,15 @@
     function daysInMonth(m, y) {
       return new Date(y, m + 1, 0).getDate();
     }
+
+    // Add SVG background rectangle
+    const bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bgRect.setAttribute('x', 0);
+    bgRect.setAttribute('y', 0);
+    bgRect.setAttribute('width', width);
+    bgRect.setAttribute('height', height);
+    bgRect.setAttribute('fill', '#222');
+    svg.appendChild(bgRect);
 
     // Draw months
     for (let m = 0; m < 12; m++) {
