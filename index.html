@@ -22,7 +22,7 @@
 </head>
 <body>
   <div class="calendar-container">
-    <pre id="base64-output" style="word-break:break-all;white-space:pre-wrap;font-size:12px;max-width:1200px;max-height:1200px;overflow:auto;background:#222;color:#fff;padding:16px;border-radius:8px;"></pre>
+    <img id="calendar-img" width="1284" height="2778" alt="Kalender 2026" style="display:block;max-width:100%;border-radius:8px;background:#222;" />
     <svg id="calendar-svg" width="1284" height="2778" viewBox="0 0 1284 2778" xmlns="http://www.w3.org/2000/svg" style="display:none;"></svg>
   </div>
   <script>
@@ -124,19 +124,18 @@
       }
     }
 
-    function renderSVGBase64Text() {
+    function renderSVGToImage() {
       try {
-        const output = document.getElementById('base64-output');
+        const img = document.getElementById('calendar-img');
         const serializer = new XMLSerializer();
         const svgString = serializer.serializeToString(svg);
-        alert('SVG string: ' + svgString.slice(0, 200) + '...');
         const svgBase64 = 'data:image/svg+xml;base64,' + base64EncodeUnicode(svgString);
-        output.textContent = svgBase64;
+        img.src = svgBase64;
       } catch (e) {
-        alert('renderSVGBase64Text error: ' + e);
+        alert('renderSVGToImage error: ' + e);
       }
     }
-    renderSVGBase64Text();
+    renderSVGToImage();
   </script>
 </body>
 </html>
