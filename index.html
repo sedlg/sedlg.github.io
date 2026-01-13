@@ -22,8 +22,8 @@
 </head>
 <body>
   <div class="calendar-container">
-    <!-- SVG calendar will be inserted here by script -->
-    <svg id="calendar-svg" width="1284" height="2778" viewBox="0 0 1284 2778" xmlns="http://www.w3.org/2000/svg"></svg>
+    <pre id="base64-output" style="word-break:break-all;white-space:pre-wrap;font-size:12px;max-width:1200px;max-height:1200px;overflow:auto;background:#222;color:#fff;padding:16px;border-radius:8px;"></pre>
+    <svg id="calendar-svg" width="1284" height="2778" viewBox="0 0 1284 2778" xmlns="http://www.w3.org/2000/svg" style="display:none;"></svg>
   </div>
   <script>
     // Calendar parameters
@@ -37,8 +37,8 @@
     const colorPast = '#bbb';
     const colorToday = 'orange';
     const colorFuture = '#666';
-    // Font
-    const fontFamily = 'calibri, sans-serif';
+    // Font (use web-safe for GitHub Pages)
+    const fontFamily = 'Arial, Helvetica, sans-serif';
     const labelFont = '36px ' + fontFamily;
     // --- Layout variables ---
     const marginH = 4; // horizontal margin (very small)
@@ -72,7 +72,7 @@
       label.setAttribute('fill', colorPast);
       label.setAttribute('font-family', fontFamily);
       label.setAttribute('font-size', '36px');
-      label.setAttribute('font-weight', 'normal');
+      label.setAttribute('font-weight', 'bold');
       label.textContent = months[m];
       svg.appendChild(label);
       // Days grid
@@ -105,6 +105,38 @@
         svg.appendChild(dot);
       }
     }
+
+    // Render SVG as image
+    // Unicode-safe base64 encoding for SVG
+    function base64EncodeUnicode(str) {
+      try {
+        // First we escape the string using encodeURIComponent to get the UTF-8 encoding of the characters,
+        // then we convert the percent encodings into raw bytes, and finally btoa for base64.
+        const encoded = encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+          return String.fromCharCode('0x' + p1);
+        });
+        const b64 = btoa(encoded);
+        alert('base64EncodeUnicode success');
+        return b64;
+      } catch (e) {
+        alert('base64EncodeUnicode error: ' + e);
+        return '';
+      }
+    }
+
+    function renderSVGBase64Text() {
+      try {
+        const output = document.getElementById('base64-output');
+        const serializer = new XMLSerializer();
+        const svgString = serializer.serializeToString(svg);
+        alert('SVG string: ' + svgString.slice(0, 200) + '...');
+        const svgBase64 = 'data:image/svg+xml;base64,' + base64EncodeUnicode(svgString);
+        output.textContent = svgBase64;
+      } catch (e) {
+        alert('renderSVGBase64Text error: ' + e);
+      }
+    }
+    renderSVGBase64Text();
   </script>
 </body>
 </html>
