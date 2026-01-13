@@ -22,8 +22,8 @@
 </head>
 <body>
   <div class="calendar-container">
-    <!-- SVG calendar will be inserted here by script -->
-    <svg id="calendar-svg" width="1284" height="2778" viewBox="0 0 1284 2778" xmlns="http://www.w3.org/2000/svg"></svg>
+    <img id="calendar-img" width="1284" height="2778" alt="Kalender 2026" />
+    <svg id="calendar-svg" width="1284" height="2778" viewBox="0 0 1284 2778" xmlns="http://www.w3.org/2000/svg" style="display:none;"></svg>
   </div>
   <script>
     // Calendar parameters
@@ -72,7 +72,7 @@
       label.setAttribute('fill', colorPast);
       label.setAttribute('font-family', fontFamily);
       label.setAttribute('font-size', '36px');
-      label.setAttribute('font-weight', 'normal');
+      label.setAttribute('font-weight', 'bold');
       label.textContent = months[m];
       svg.appendChild(label);
       // Days grid
@@ -105,6 +105,16 @@
         svg.appendChild(dot);
       }
     }
+
+    // Render SVG as image
+    function renderSVGAsImage() {
+      const img = document.getElementById('calendar-img');
+      const serializer = new XMLSerializer();
+      const svgString = serializer.serializeToString(svg);
+      const svgBase64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
+      img.src = svgBase64;
+    }
+    renderSVGAsImage();
   </script>
 </body>
 </html>
