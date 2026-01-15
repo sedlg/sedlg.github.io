@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="UTF-8">
   <title>Minimalistischer Kalender 2026</title>
   <meta name="viewport" content="width=1284, initial-scale=1">
-  
 </head>
+
 <body>
   <div class="calendar-container">
-    <img id="calendar-img" width="1284" height="2778" alt="Kalender 2026"/>
-    <svg id="calendar-svg" width="1284" height="2778" viewBox="0 0 1284 2778" xmlns="http://www.w3.org/2000/svg" style="display:none;"></svg>
+    <img id="calendar-img" width="1284" height="2778" alt="Kalender 2026" />
+    <svg id="calendar-svg" width="1284" height="2778" viewBox="0 0 1284 2778" xmlns="http://www.w3.org/2000/svg"
+      style="display:none;"></svg>
   </div>
   <script>
     // Calendar parameters
@@ -38,6 +40,33 @@
     const dotGap = dotR * 1.5;
     svg.innerHTML = '';
 
+    // --- Parse URL for day color overrides ---
+    // Format: ?q=(1-based day of yearXXXhex colorYYY...) e.g. ?q=32XXXff0000YYY60XXX00ff00
+    function getDayColorOverrides() {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get('q');
+      if (!q) return {};
+      const map = {};
+      q.split('YYY').forEach(pair => {
+        const match = pair.match(/^(\d{1,3})\XXX([0-9a-fA-F]{6})$/);
+        if (match) {
+          const dayNr = parseInt(match[1], 10);
+          const color = '#' + match[2];
+          map[dayNr] = color;
+        }
+      });
+      return map;
+    }
+    const dayColorOverrides = getDayColorOverrides();
+
+    // Helper: get day of year (1-based)
+    function getDayOfYear(date) {
+      const start = new Date(date.getFullYear(), 0, 0);
+      const diff = date - start;
+      const oneDay = 1000 * 60 * 60 * 24;
+      return Math.floor(diff / oneDay);
+    }
+
     function daysInMonth(m, y) {
       return new Date(y, m + 1, 0).getDate();
     }
@@ -52,6 +81,7 @@
     svg.appendChild(bgRect);
 
     // Draw months
+    let dayOfYearCounter = 1;
     for (let m = 0; m < 12; m++) {
       const row = Math.floor(m / cols);
       const col = m % cols;
@@ -86,6 +116,10 @@
         const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         if (dayDate < todayDate) color = colorPast;
         if (dayDate.getTime() === todayDate.getTime()) color = colorToday;
+        // Check for override via URL
+        if (dayColorOverrides[dayOfYearCounter]) {
+          color = dayColorOverrides[dayOfYearCounter];
+        }
         const dayIdx = d - 1;
         // Offset by firstDay so the first day lands in the correct column
         const colIdx = (dayIdx + firstDay) % gridCols;
@@ -98,6 +132,7 @@
         dot.setAttribute('r', dotR);
         dot.setAttribute('fill', color);
         svg.appendChild(dot);
+        dayOfYearCounter++;
       }
     }
 
@@ -107,7 +142,7 @@
       try {
         // First we escape the string using encodeURIComponent to get the UTF-8 encoding of the characters,
         // then we convert the percent encodings into raw bytes, and finally btoa for base64.
-        const encoded = encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+        const encoded = encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (match, p1) {
           return String.fromCharCode('0x' + p1);
         });
         const b64 = btoa(encoded);
@@ -134,4 +169,5 @@
     renderSVGToImage();
   </script>
 </body>
+
 </html>
