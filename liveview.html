@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Live Upload Viewer</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: #eee;
+  text-align: center;
+  padding: 40px;
+}
+
+img {
+  max-width: 80%;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.timestamp {
+  margin-top: 10px;
+  color: #aaa;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Latest Upload</h1>
+
+<img id="preview" hidden>
+<div class="timestamp" id="time"></div>
+
+<script>
+const API_URL = "https://shrill-cloud-8079.sedlacek-gregor.workers.dev/latest";
+
+async function loadImage() {
+  const res = await fetch(API_URL);
+  const data = await res.json();
+
+  if (data.image) {
+    document.getElementById("preview").src =
+      "data:image/jpeg;base64," + data.image;
+
+    document.getElementById("preview").hidden = false;
+    document.getElementById("time").textContent =
+      "Uploaded at: " + data.time;
+  }
+}
+
+setInterval(loadImage, 2000);
+loadImage();
+</script>
+
+</body>
+</html>
