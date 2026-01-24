@@ -40,24 +40,32 @@
     const dotGap = dotR * 1.5;
     svg.innerHTML = '';
 
-    // --- Parse URL for day color overrides ---
-    // Format: ?q=(1-based day of yearXXXhex colorYYY...) e.g. ?q=32XXXff0000YYY60XXX00ff00
-    function getDayColorOverrides() {
+    // --- Parse URL for event colors and events ---
+    // Format: ?ci=Hex1-Hex2...&q=day_colorindex-day_colorindex-...
+    function getEventColors() {
+      const params = new URLSearchParams(window.location.search);
+      const ci = params.get('ci');
+      if (!ci) return [];
+      return ci.split('-').map(hex => '#' + hex);
+    }
+    function getDayEvents() {
       const params = new URLSearchParams(window.location.search);
       const q = params.get('q');
       if (!q) return {};
       const map = {};
-      q.split('YYY').forEach(pair => {
-        const match = pair.match(/^(\d{1,3})\XXX([0-9a-fA-F]{6})$/);
+      q.split('-').forEach(pair => {
+        const match = pair.match(/^(\d{1,3})_(\d{1,2})$/);
         if (match) {
           const dayNr = parseInt(match[1], 10);
-          const color = '#' + match[2];
-          map[dayNr] = color;
+          const colorIdx = parseInt(match[2], 10);
+          if (!map[dayNr]) map[dayNr] = [];
+          map[dayNr].push(colorIdx);
         }
       });
       return map;
     }
-    const dayColorOverrides = getDayColorOverrides();
+    const eventColors = getEventColors();
+    const dayEvents = getDayEvents();
 
     // Helper: get day of year (1-based)
     function getDayOfYear(date) {
@@ -111,27 +119,67 @@
       firstDay = (firstDay + 6) % 7;
       for (let d = 1; d <= days; d++) {
         const dayDate = new Date(year, m, d);
-        let color = colorFuture;
-        // Remove time for comparison
         const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        if (dayDate < todayDate) color = colorPast;
-        if (dayDate.getTime() === todayDate.getTime()) color = colorToday;
-        // Check for override via URL
-        if (dayColorOverrides[dayOfYearCounter]) {
-          color = dayColorOverrides[dayOfYearCounter];
-        }
         const dayIdx = d - 1;
         // Offset by firstDay so the first day lands in the correct column
         const colIdx = (dayIdx + firstDay) % gridCols;
         const rowIdx = Math.floor((dayIdx + firstDay) / gridCols);
         const cx = startX + colIdx * (dotR * 2 + dotGap) + dotR;
         const cy = startY + rowIdx * (dotR * 2 + dotGap) + dotR;
-        const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        dot.setAttribute('cx', cx);
-        dot.setAttribute('cy', cy);
-        dot.setAttribute('r', dotR);
-        dot.setAttribute('fill', color);
-        svg.appendChild(dot);
+        // Determine segments for this day
+        let segments = [];
+        // Events for this day
+        const events = dayEvents[dayOfYearCounter] || [];
+        // If today, always include today color as a segment
+        const isToday = dayDate.getTime() === todayDate.getTime();
+        if (isToday) segments.push(colorToday);
+        // Add event colors
+        events.forEach(idx => {
+          if (eventColors[idx]) segments.push(eventColors[idx]);
+        });
+        // If no segments, use default color logic
+        if (segments.length === 0) {
+          let color = colorFuture;
+          if (dayDate < todayDate) color = colorPast;
+          if (isToday) color = colorToday;
+          // Draw single color circle
+          const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          dot.setAttribute('cx', cx);
+          dot.setAttribute('cy', cy);
+          dot.setAttribute('r', dotR);
+          dot.setAttribute('fill', color);
+          svg.appendChild(dot);
+        } else if (segments.length === 1) {
+          // Only one segment, draw as circle
+          const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          dot.setAttribute('cx', cx);
+          dot.setAttribute('cy', cy);
+          dot.setAttribute('r', dotR);
+          dot.setAttribute('fill', segments[0]);
+          svg.appendChild(dot);
+        } else {
+          // Multiple segments: draw as pie chart
+          const angleStep = 2 * Math.PI / segments.length;
+          for (let i = 0; i < segments.length; i++) {
+            const startAngle = i * angleStep - Math.PI / 2;
+            const endAngle = startAngle + angleStep;
+            const x1 = cx + dotR * Math.cos(startAngle);
+            const y1 = cy + dotR * Math.sin(startAngle);
+            const x2 = cx + dotR * Math.cos(endAngle);
+            const y2 = cy + dotR * Math.sin(endAngle);
+            const largeArcFlag = angleStep > Math.PI ? 1 : 0;
+            const pathData = [
+              `M ${cx} ${cy}`,
+              `L ${x1} ${y1}`,
+              `A ${dotR} ${dotR} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+              'Z'
+            ].join(' ');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', pathData);
+            path.setAttribute('fill', segments[i]);
+            svg.appendChild(path);
+          }
+        }
         dayOfYearCounter++;
       }
     }
