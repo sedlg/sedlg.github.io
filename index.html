@@ -157,8 +157,29 @@
           dot.setAttribute('r', dotR);
           dot.setAttribute('fill', segments[0]);
           svg.appendChild(dot);
+        } else if (segments.length === 2) {
+          // Two segments: split horizontally (top/bottom)
+          // Top half: -90° to 90° (segment 0), Bottom half: 90° to 270° (segment 1)
+          for (let i = 0; i < 2; i++) {
+            const startAngle = (i === 0) ? -Math.PI / 2 : Math.PI / 2;
+            const endAngle = (i === 0) ? Math.PI / 2 : 3 * Math.PI / 2;
+            const x1 = cx + dotR * Math.cos(startAngle);
+            const y1 = cy + dotR * Math.sin(startAngle);
+            const x2 = cx + dotR * Math.cos(endAngle);
+            const y2 = cy + dotR * Math.sin(endAngle);
+            const pathData = [
+              `M ${cx} ${cy}`,
+              `L ${x1} ${y1}`,
+              `A ${dotR} ${dotR} 0 0 1 ${x2} ${y2}`,
+              'Z'
+            ].join(' ');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', pathData);
+            path.setAttribute('fill', segments[i]);
+            svg.appendChild(path);
+          }
         } else {
-          // Multiple segments: draw as pie chart
+          // Multiple segments: draw as pie chart (default)
           const angleStep = 2 * Math.PI / segments.length;
           for (let i = 0; i < segments.length; i++) {
             const startAngle = i * angleStep - Math.PI / 2;
