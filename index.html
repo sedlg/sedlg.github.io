@@ -192,8 +192,8 @@
           path.setAttribute('fill', segments[0]);
           svg.appendChild(path);
           // Bottom half
-          startAngle = Math.PI / 2;
-          endAngle = -Math.PI / 2;
+          startAngle = Math.PI;
+          endAngle = 2 * Math.PI;
           x1 = cx + dotR * Math.cos(startAngle);
           y1 = cy + dotR * Math.sin(startAngle);
           x2 = cx + dotR * Math.cos(endAngle);
