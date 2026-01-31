@@ -172,7 +172,7 @@
           svg.appendChild(dot);
         } else if (segments.length === 2) {
           // Two segments: split horizontally (top/bottom)
-          // Top half: -90° to 90° (segment 0, sweep-flag 0), Bottom half: 90° to 270° (segment 1, sweep-flag 0)
+          // Top half: -90° to 90° (segment 0, sweep-flag 1), Bottom half: 90° to 270° (segment 1, sweep-flag 1)
           for (let i = 0; i < 2; i++) {
             const startAngle = (i === 0) ? -Math.PI / 2 : Math.PI / 2;
             const endAngle = (i === 0) ? Math.PI / 2 : 3 * Math.PI / 2;
@@ -180,11 +180,11 @@
             const y1 = cy + dotR * Math.sin(startAngle);
             const x2 = cx + dotR * Math.cos(endAngle);
             const y2 = cy + dotR * Math.sin(endAngle);
-            // Use sweep-flag 0 for both, so the arc goes the short way (top and bottom halves)
+            // Use sweep-flag 1 for both, so the arc goes the long way (top and bottom halves)
             const pathData = [
               `M ${cx} ${cy}`,
               `L ${x1} ${y1}`,
-              `A ${dotR} ${dotR} 0 0 0 ${x2} ${y2}`,
+              `A ${dotR} ${dotR} 0 0 1 ${x2} ${y2}`,
               'Z'
             ].join(' ');
             const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
