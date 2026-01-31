@@ -54,12 +54,14 @@
       if (!q) return {};
       const map = {};
       q.split('-').forEach(pair => {
-        const match = pair.match(/^(\d{1,3})_(\d{1,2})$/);
+        // Match: day_colorindex or day_colorindexX
+        const match = pair.match(/^(\d{1,3})_(\d{1,2})(X)?$/);
         if (match) {
           const dayNr = parseInt(match[1], 10);
           const colorIdx = parseInt(match[2], 10);
+          const isDark = !!match[3];
           if (!map[dayNr]) map[dayNr] = [];
-          map[dayNr].push(colorIdx);
+          map[dayNr].push({ colorIdx, isDark });
         }
       });
       return map;
@@ -133,9 +135,20 @@
         // If today, always include today color as a segment
         const isToday = dayDate.getTime() === todayDate.getTime();
         if (isToday) segments.push(colorToday);
-        // Add event colors
-        events.forEach(idx => {
-          if (eventColors[idx]) segments.push(eventColors[idx]);
+        // Add event colors, supporting 'X' for dark variant
+        events.forEach(ev => {
+          if (eventColors[ev.colorIdx]) {
+            if (ev.isDark) {
+              // Convert hex to rgba with alpha for dark effect
+              const hex = eventColors[ev.colorIdx].replace('#', '');
+              const r = parseInt(hex.substring(0, 2), 16);
+              const g = parseInt(hex.substring(2, 4), 16);
+              const b = parseInt(hex.substring(4, 6), 16);
+              segments.push(`rgba(${r},${g},${b},0.6)`); // 0.6 alpha for darker look
+            } else {
+              segments.push(eventColors[ev.colorIdx]);
+            }
+          }
         });
         // If no segments, use default color logic
         if (segments.length === 0) {
