@@ -175,8 +175,8 @@
           // Top half: -90° to 90° (segment 0, sweep-flag 1), Bottom half: 90° to -90° (segment 1, sweep-flag 1)
           // This ensures the top segment is always above, and the bottom segment is always below.
           // Top half
-          let startAngle = -Math.PI / 2;
-          let endAngle = Math.PI / 2;
+          let startAngle = 0; // -Math.PI / 2;
+          let endAngle = Math.PI; // / 2;
           let x1 = cx + dotR * Math.cos(startAngle);
           let y1 = cy + dotR * Math.sin(startAngle);
           let x2 = cx + dotR * Math.cos(endAngle);
