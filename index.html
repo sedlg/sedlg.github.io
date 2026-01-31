@@ -172,26 +172,42 @@
           svg.appendChild(dot);
         } else if (segments.length === 2) {
           // Two segments: split horizontally (top/bottom)
-          // Top half: -90° to 90° (segment 0, sweep-flag 1), Bottom half: 90° to 270° (segment 1, sweep-flag 1)
-          for (let i = 0; i < 2; i++) {
-            const startAngle = (i === 0) ? -Math.PI / 2 : Math.PI / 2;
-            const endAngle = (i === 0) ? Math.PI / 2 : 3 * Math.PI / 2;
-            const x1 = cx + dotR * Math.cos(startAngle);
-            const y1 = cy + dotR * Math.sin(startAngle);
-            const x2 = cx + dotR * Math.cos(endAngle);
-            const y2 = cy + dotR * Math.sin(endAngle);
-            // Use sweep-flag 1 for both, so the arc goes the long way (top and bottom halves)
-            const pathData = [
-              `M ${cx} ${cy}`,
-              `L ${x1} ${y1}`,
-              `A ${dotR} ${dotR} 0 0 1 ${x2} ${y2}`,
-              'Z'
-            ].join(' ');
-            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('d', pathData);
-            path.setAttribute('fill', segments[i]);
-            svg.appendChild(path);
-          }
+          // Top half: -90° to 90° (segment 0, sweep-flag 1), Bottom half: 90° to -90° (segment 1, sweep-flag 1)
+          // This ensures the top segment is always above, and the bottom segment is always below.
+          // Top half
+          let startAngle = -Math.PI / 2;
+          let endAngle = Math.PI / 2;
+          let x1 = cx + dotR * Math.cos(startAngle);
+          let y1 = cy + dotR * Math.sin(startAngle);
+          let x2 = cx + dotR * Math.cos(endAngle);
+          let y2 = cy + dotR * Math.sin(endAngle);
+          let pathData = [
+            `M ${cx} ${cy}`,
+            `L ${x1} ${y1}`,
+            `A ${dotR} ${dotR} 0 0 1 ${x2} ${y2}`,
+            'Z'
+          ].join(' ');
+          let path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', pathData);
+          path.setAttribute('fill', segments[0]);
+          svg.appendChild(path);
+          // Bottom half
+          startAngle = Math.PI / 2;
+          endAngle = -Math.PI / 2;
+          x1 = cx + dotR * Math.cos(startAngle);
+          y1 = cy + dotR * Math.sin(startAngle);
+          x2 = cx + dotR * Math.cos(endAngle);
+          y2 = cy + dotR * Math.sin(endAngle);
+          pathData = [
+            `M ${cx} ${cy}`,
+            `L ${x1} ${y1}`,
+            `A ${dotR} ${dotR} 0 0 1 ${x2} ${y2}`,
+            'Z'
+          ].join(' ');
+          path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', pathData);
+          path.setAttribute('fill', segments[1]);
+          svg.appendChild(path);
         } else {
           // Multiple segments: draw as pie chart (default)
           const angleStep = 2 * Math.PI / segments.length;
