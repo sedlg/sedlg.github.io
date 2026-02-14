@@ -128,6 +128,8 @@
         const rowIdx = Math.floor((dayIdx + firstDay) / gridCols);
         const cx = startX + colIdx * (dotR * 2 + dotGap) + dotR;
         const cy = startY + rowIdx * (dotR * 2 + dotGap) + dotR;
+        // Check if this day is a Monday
+        const isMonday = dayDate.getDay() === 1;
         // Determine segments for this day
         let segments = [];
         // Events for this day
@@ -162,6 +164,19 @@
           dot.setAttribute('r', dotR);
           dot.setAttribute('fill', color);
           svg.appendChild(dot);
+          // If Monday, add small number in background color
+          if (isMonday) {
+            const num = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            num.setAttribute('x', cx);
+            num.setAttribute('y', cy + 5); // vertical centering tweak
+            num.setAttribute('text-anchor', 'middle');
+            num.setAttribute('fill', '#222');
+            num.setAttribute('font-family', fontFamily);
+            num.setAttribute('font-size', '18px');
+            num.setAttribute('font-weight', 'bold');
+            num.textContent = d;
+            svg.appendChild(num);
+          }
         } else if (segments.length === 1) {
           // Only one segment, draw as circle
           const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -170,13 +185,23 @@
           dot.setAttribute('r', dotR);
           dot.setAttribute('fill', segments[0]);
           svg.appendChild(dot);
+          // If Monday, add small number in background color
+          if (isMonday) {
+            const num = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            num.setAttribute('x', cx);
+            num.setAttribute('y', cy + 5);
+            num.setAttribute('text-anchor', 'middle');
+            num.setAttribute('fill', '#222');
+            num.setAttribute('font-family', fontFamily);
+            num.setAttribute('font-size', '18px');
+            num.setAttribute('font-weight', 'bold');
+            num.textContent = d;
+            svg.appendChild(num);
+          }
         } else if (segments.length === 2) {
           // Two segments: split horizontally (top/bottom)
-          // Top half: -90° to 90° (segment 0, sweep-flag 1), Bottom half: 90° to -90° (segment 1, sweep-flag 1)
-          // This ensures the top segment is always above, and the bottom segment is always below.
-          // Top half
-          let startAngle = 0; // -Math.PI / 2;
-          let endAngle = Math.PI; // / 2;
+          let startAngle = 0;
+          let endAngle = Math.PI;
           let x1 = cx + dotR * Math.cos(startAngle);
           let y1 = cy + dotR * Math.sin(startAngle);
           let x2 = cx + dotR * Math.cos(endAngle);
@@ -208,6 +233,19 @@
           path.setAttribute('d', pathData);
           path.setAttribute('fill', segments[1]);
           svg.appendChild(path);
+          // If Monday, add small number in background color
+          if (isMonday) {
+            const num = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            num.setAttribute('x', cx);
+            num.setAttribute('y', cy + 5);
+            num.setAttribute('text-anchor', 'middle');
+            num.setAttribute('fill', '#222');
+            num.setAttribute('font-family', fontFamily);
+            num.setAttribute('font-size', '18px');
+            num.setAttribute('font-weight', 'bold');
+            num.textContent = d;
+            svg.appendChild(num);
+          }
         } else {
           // Multiple segments: draw as pie chart (default)
           const angleStep = 2 * Math.PI / segments.length;
@@ -229,6 +267,19 @@
             path.setAttribute('d', pathData);
             path.setAttribute('fill', segments[i]);
             svg.appendChild(path);
+          }
+          // If Monday, add small number in background color
+          if (isMonday) {
+            const num = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            num.setAttribute('x', cx);
+            num.setAttribute('y', cy + 5);
+            num.setAttribute('text-anchor', 'middle');
+            num.setAttribute('fill', '#222');
+            num.setAttribute('font-family', fontFamily);
+            num.setAttribute('font-size', '18px');
+            num.setAttribute('font-weight', 'bold');
+            num.textContent = d;
+            svg.appendChild(num);
           }
         }
         dayOfYearCounter++;
