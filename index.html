@@ -40,6 +40,13 @@
     const dotGap = dotR * 1.5;
     svg.innerHTML = '';
 
+    // --- Parse URL for custom text ---
+    function getCustomText() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('text') || '';
+    }
+    const customText = getCustomText();
+
     // --- Parse URL for event colors and events ---
     // Format: ?ci=Hex1-Hex2...&q=day_colorindex-day_colorindex-...
     function getEventColors() {
@@ -191,7 +198,7 @@
             num.setAttribute('x', cx);
             num.setAttribute('y', cy + 5);
             num.setAttribute('text-anchor', 'middle');
-            num.setAttribute('fill', '#222');
+            num.setAttribute('fill', '#FFF');
             num.setAttribute('font-family', fontFamily);
             num.setAttribute('font-size', '18px');
             num.setAttribute('font-weight', 'bold');
@@ -284,6 +291,23 @@
         }
         dayOfYearCounter++;
       }
+    }
+
+    // --- Draw custom text below all months if present ---
+    if (customText) {
+      // Calculate y position: below the last row of months
+      const lastRowY = gridTop + (rows) * monthH;
+      const textY = lastRowY + 60; // 60px below last row
+      const textElem = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      textElem.setAttribute('x', width / 2);
+      textElem.setAttribute('y', textY);
+      textElem.setAttribute('text-anchor', 'middle');
+      textElem.setAttribute('fill', '#fff');
+      textElem.setAttribute('font-family', fontFamily);
+      textElem.setAttribute('font-size', '40px');
+      textElem.setAttribute('font-weight', 'bold');
+      textElem.textContent = customText;
+      svg.appendChild(textElem);
     }
 
     // Render SVG as image
