@@ -298,7 +298,7 @@
       // Calculate y position: below the last row of months (bottom of grid)
       // gridBottom is already defined as height * (1 / 5), but that's above the grid. We want below the grid.
       // The grid starts at gridTop and ends at gridTop + rows * monthH
-      const monthsBottom = gridTop - monthH;
+      const monthsBottom = gridTop - 2*monthH;
       const textY = monthsBottom - 90; // 60px below the last row
       const textElem = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       textElem.setAttribute('x', width / 2);
