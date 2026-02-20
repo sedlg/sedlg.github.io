@@ -281,7 +281,7 @@
             num.setAttribute('x', cx);
             num.setAttribute('y', cy + 5);
             num.setAttribute('text-anchor', 'middle');
-            num.setAttribute('fill', '#222');
+            num.setAttribute('fill', '#fff');
             num.setAttribute('font-family', fontFamily);
             num.setAttribute('font-size', '18px');
             num.setAttribute('font-weight', 'bold');
@@ -295,9 +295,11 @@
 
     // --- Draw custom text below all months if present ---
     if (customText) {
-      // Calculate y position: below the last row of months
-      const lastRowY = gridTop + (rows) * monthH;
-      const textY = lastRowY + 60; // 60px below last row
+      // Calculate y position: below the last row of months (bottom of grid)
+      // gridBottom is already defined as height * (1 / 5), but that's above the grid. We want below the grid.
+      // The grid starts at gridTop and ends at gridTop + rows * monthH
+      const monthsBottom = gridTop + rows * monthH;
+      const textY = monthsBottom + 60; // 60px below the last row
       const textElem = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       textElem.setAttribute('x', width / 2);
       textElem.setAttribute('y', textY);
