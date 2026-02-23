@@ -179,7 +179,9 @@
             num.setAttribute('x', cx);
             num.setAttribute('y', cy + 5); // vertical centering tweak
             num.setAttribute('text-anchor', 'middle');
-            num.setAttribute('fill', '#fff');
+            // Use background color if in the past, white if today or in the future
+            const numColor = (dayDate < todayDate) ? '#222' : '#fff';
+            num.setAttribute('fill', numColor);
             num.setAttribute('font-family', fontFamily);
             num.setAttribute('font-size', '18px');
             num.setAttribute('font-weight', 'bold');
@@ -200,7 +202,9 @@
             num.setAttribute('x', cx);
             num.setAttribute('y', cy + 5);
             num.setAttribute('text-anchor', 'middle');
-            num.setAttribute('fill', '#FFF');
+            // Use background color if in the past, white if today or in the future
+            const numColor = (dayDate < todayDate) ? '#222' : '#fff';
+            num.setAttribute('fill', numColor);
             num.setAttribute('font-family', fontFamily);
             num.setAttribute('font-size', '18px');
             num.setAttribute('font-weight', 'bold');
@@ -248,7 +252,9 @@
             num.setAttribute('x', cx);
             num.setAttribute('y', cy + 5);
             num.setAttribute('text-anchor', 'middle');
-            num.setAttribute('fill', '#222');
+            // Use background color if in the past, white if today or in the future
+            const numColor = (dayDate < todayDate) ? '#222' : '#fff';
+            num.setAttribute('fill', numColor);
             num.setAttribute('font-family', fontFamily);
             num.setAttribute('font-size', '18px');
             num.setAttribute('font-weight', 'bold');
@@ -283,7 +289,9 @@
             num.setAttribute('x', cx);
             num.setAttribute('y', cy + 5);
             num.setAttribute('text-anchor', 'middle');
-            num.setAttribute('fill', '#fff');
+            // Use background color if in the past, white if today or in the future
+            const numColor = (dayDate < todayDate) ? '#222' : '#fff';
+            num.setAttribute('fill', numColor);
             num.setAttribute('font-family', fontFamily);
             num.setAttribute('font-size', '18px');
             num.setAttribute('font-weight', 'bold');
