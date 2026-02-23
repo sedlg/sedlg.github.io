@@ -117,6 +117,8 @@
       label.setAttribute('font-weight', 'bold');
       label.textContent = months[m];
       svg.appendChild(label);
+      // Log month cell info
+      console.log('Month cell:', months[m], 'x:', x0, 'y:', y0);
       // Days grid
       const days = daysInMonth(m, year);
       const gridCols = 7;
@@ -177,7 +179,7 @@
             num.setAttribute('x', cx);
             num.setAttribute('y', cy + 5); // vertical centering tweak
             num.setAttribute('text-anchor', 'middle');
-            num.setAttribute('fill', '#222');
+            num.setAttribute('fill', '#fff');
             num.setAttribute('font-family', fontFamily);
             num.setAttribute('font-size', '18px');
             num.setAttribute('font-weight', 'bold');
